@@ -14,9 +14,7 @@
 
 (set-face-attribute 'default nil :font "Hasklig" :height efs/default-font-size)
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
-(load-theme 'cobalt2 t)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -215,6 +213,10 @@
 
 (use-package el-get
   :init
+  (el-get-bundle cobalt2
+    :url "https://gitlab.com/__tpb/cobalt2-emacs-theme.git"
+    (add-to-list 'custom-theme-load-path "~/.emacs.d/el-get/cobalt2")
+    (load-theme 'cobalt2 t))
   (el-get-bundle ligature
     :url "https://github.com/mickeynp/ligature.el.git"
     (use-package ligature
