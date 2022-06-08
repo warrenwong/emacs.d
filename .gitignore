@@ -1,0 +1,12 @@
+*~
+.*
+!.gitignore
+elpa/
+el-get/
+transient/
+var/
+
+*.sqlite
+*.data
+
+projectile-bookmarks.eld
