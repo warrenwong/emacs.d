@@ -14,9 +14,48 @@
 
 (set-face-attribute 'default nil :font "Hasklig" :height efs/default-font-size)
 
-
-
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(setq insert-directory-program "/opt/homebrew/bin/gls")
+
+(setq dired-listing-switches "-aBhl --group-directories-first")
+
+(setq js-indent-level 2)
+
+(use-package el-get
+  :init
+  (el-get-bundle cobalt2
+    :url "https://gitlab.com/__tpb/cobalt2-emacs-theme.git"
+    (add-to-list 'custom-theme-load-path "~/.emacs.d/el-get/cobalt2")
+    (load-theme 'cobalt2 t))
+  (el-get-bundle ligature
+    :url "https://github.com/mickeynp/ligature.el.git"
+    (use-package ligature
+      :defer t
+      :load-path "~/.emacs.d/el-get/ligature"
+      :config
+      ;; Enable the "www" ligature in every possible major mode
+      (ligature-set-ligatures 't '("www"))
+      ;; Enable traditional ligature support in eww-mode, if the
+      ;; `variable-pitch' face supports it
+      (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+      ;; Enable all Cascadia Conde ligatures in programming modes
+      (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+					   ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+					   "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+					   "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+					   "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+					   "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+					   "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+					   "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+					   ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+					   "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+					   "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+					   "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+					   "\\\\" "://"))
+      ;; Enables ligature checks globally in all buffers. You can also do it
+      ;; per mode with `ligature-mode'.
+      (global-ligature-mode t))))
 
 (require 'package)
 
@@ -85,11 +124,10 @@
 (use-package hydra
   :defer t)
 
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
+(defhydra hydra-zoom (global-map "<f5>")
+  "zoom"
+  ("k" text-scale-increase "in")
+  ("j" text-scale-decrease "out"))
 
 (defun efs/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -109,7 +147,15 @@
   (lsp-ui-doc-position 'bottom))
 
 (use-package lsp-treemacs
-  :after lsp)
+  :after lsp
+  :config
+  (lsp-treemacs-sync-mode 1)
+  :bind
+  (:map global-map
+	("C-c t t" . treemacs)
+	("C-c t 0" . treemacs-select-window)
+	("C-c t d" . treemacs-select-directory)
+	("C-c t f" . treemacs-find-file)))
 
 (use-package lsp-ivy
   :after lsp)
@@ -130,16 +176,17 @@
   :hook (typescript-mode . 'prettier-js-mode))
 
 (use-package python-mode
-  :hook (python-mode . lsp-deferred)
+  :hook (python-mode . lsp-mode)
   :custom
   (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python))
+  (require 'dap-python)
+  (setq tab-width 4))
 
 (use-package pyvenv
   :after python-mode
   :config
-  (pyenv-mode 1))
+  (pyvenv-mode 1))
 
 (use-package company
   :after lsp-mode
@@ -170,6 +217,13 @@
 (use-package counsel-projectile
   :after projectile
   :config (counsel-projectile-mode))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
+(use-package ag)
+
+(use-package ripgrep)
 
 (use-package magit
   :commands magit-status
@@ -211,48 +265,13 @@
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode))
 
-(use-package el-get
-  :init
-  (el-get-bundle cobalt2
-    :url "https://gitlab.com/__tpb/cobalt2-emacs-theme.git"
-    (add-to-list 'custom-theme-load-path "~/.emacs.d/el-get/cobalt2")
-    (load-theme 'cobalt2 t))
-  (el-get-bundle ligature
-    :url "https://github.com/mickeynp/ligature.el.git"
-    (use-package ligature
-      :load-path "~/.emacs.d/el-get/ligature"
-      :config
-      ;; Enable the "www" ligature in every possible major mode
-      (ligature-set-ligatures 't '("www"))
-      ;; Enable traditional ligature support in eww-mode, if the
-      ;; `variable-pitch' face supports it
-      (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-      ;; Enable all Cascadia Conde ligatures in programming modes
-      (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-					   ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-					   "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-					   "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-					   "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-					   "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-					   "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-					   "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-					   ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-					   "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-					   "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-					   "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-					   "\\\\" "://"))
-      ;; Enables ligature checks globally in all buffers. You can also do it
-      ;; per mode with `ligature-mode'.
-      (global-ligature-mode t))))
-
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(prettier-js pyvenv doom-modeline ivy command-log-mode use-package)))
+   '(ripgrep ag javascript-mode prog-mode treemacs-projectile prettier-js pyvenv doom-modeline ivy command-log-mode use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
