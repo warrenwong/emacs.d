@@ -175,6 +175,9 @@
 (use-package prettier-js
   :hook (typescript-mode . 'prettier-js-mode))
 
+(use-package ruby-mode
+  :hook (ruby-mode . lsp-mode))
+
 (use-package python-mode
   :hook (python-mode . lsp-mode)
   :custom
