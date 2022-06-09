@@ -4,9 +4,11 @@
 elpa/
 el-get/
 transient/
+url/
 var/
 
 *.sqlite
 *.data
 
 projectile-bookmarks.eld
+projects

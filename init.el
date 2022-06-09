@@ -164,7 +164,9 @@
   :commands dap-debug
   :config
   (require 'dap-node)
-  (dap-node-setup))
+  (dap-node-setup)
+  (require 'dap-ruby)
+  (dap-ruby-setup))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -176,10 +178,11 @@
   :hook (typescript-mode . 'prettier-js-mode))
 
 (use-package ruby-mode
-  :hook (ruby-mode . lsp-mode))
+  :mode "\\.rb\\'"
+  :hook (ruby-mode . lsp-deferred))
 
 (use-package python-mode
-  :hook (python-mode . lsp-mode)
+  :hook (python-mode . lsp-deferred)
   :custom
   (dap-python-debugger 'debugpy)
   :config
