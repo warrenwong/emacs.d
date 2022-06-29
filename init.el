@@ -18,9 +18,9 @@
 
 (setq insert-directory-program "/opt/homebrew/bin/gls")
 
-(setq dired-listing-switches "-aBhl --group-directories-first")
-
 (setq js-indent-level 2)
+
+(setq exec-path (append exec-path '("~/.asdf/shims")))
 
 (require 'package)
 
@@ -177,6 +177,13 @@
 (use-package prettier-js
   :hook (typescript-mode . 'prettier-js-mode))
 
+(use-package vue-mode
+  :mode "\\.vue\\'"
+  :hook (vue-mode . lsp))
+
+(use-package emmet-mode
+  :hook (sgml-mode . emmet-mode))
+
 (use-package ruby-mode
   :mode "\\.rb\\'"
   :hook (ruby-mode . lsp-deferred))
@@ -257,7 +264,7 @@
   :ensure nil
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
-  :custom ((dired-listing-switches "-agho --group-directories-first")))
+  :custom ((dired-listing-switches "-aghol --group-directories-first")))
 
 (use-package dired-single
   :commands (dired dired-jump))
@@ -277,7 +284,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ripgrep ag javascript-mode prog-mode treemacs-projectile prettier-js pyvenv doom-modeline ivy command-log-mode use-package)))
+   '(emmet-mode ripgrep ag javascript-mode prog-mode treemacs-projectile prettier-js pyvenv doom-modeline ivy command-log-mode use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
